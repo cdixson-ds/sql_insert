@@ -23,36 +23,58 @@ cursor = connection.cursor()
 print('CURSOR:', cursor)
 
 
-
 df = pd.read_csv('titanic.csv')
-conn = sqlite3.connect("titanic.sqlite3")
 
-df.to_sql("titanic.sqlite3", conn, index_label='id')
-
+#conn = sqlite3.connect("titanic.sqlite3")
+#df.to_sql("titanic.sqlite3", conn, index_label='id')
 
 
 #Create Table
 
 create_table = """ 
 CREATE TABLE titanic_table (
+  id SERIAL PRIMARY KEY,
   Survived int, 
   Pclass int,
   Name varchar(100),
   Sex varchar(20),
-  Age float,
-  SiblingsSpouses int,
-  ParentsChildren int,
+  Age int,
+  Sib_Spouses_Count int,
+  Parent_Child_Count int,
   Fare float
 );
 """
 
-data = conn.execute('SELECT * FROM "titanic.sqlite3"').fetchall()
+#data = conn.execute('SELECT * FROM "titanic.sqlite3"').fetchall()
 
 cursor.execute(create_table)
 
-for i in data:
-  insert_data = """INSERT INTO titanic_table
-        (Survived, Pclass, Name, Sex, Age, SiblingsSpouses, ParentsChildren, Fare)
-        VALUES""" + str(i[1:])
-  cursor.execute(insert_data)
+#for i in data:
+#  insert_data = """INSERT INTO titanic_table
+#        (Survived, Pclass, Name, Sex, Age, Sib_Spouses_Count, Parent_Child_Count, Fare)
+#        VALUES""" + str(i[1:])
+#  cursor.execute(insert_data)
+
+#if len(data) == 0:
+    # INSERT RECORDS
+    #CSV_FILEPATH = "data/titanic.csv"
+
+#CSV_FILEPATH = os.path.join(os.path.dirname(__file__), "..", "data", "titanic.csv")
+#print("FILE EXISTS?", os.path.isfile(CSV_FILEPATH))
+#df = pd.read_csv(CSV_FILEPATH)
+#print(df.head())
+    # rows should be a list of tuples
+    # [
+    #   ('A rowwwww', 'null'),
+    #   ('Another row, with JSONNNNN', json.dumps(my_dict)),
+    #   ('Third row', "3")
+    # ]
+    # h/t Jesus and https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.itertuples.html
+
+
+rows = list(df.itertuples(index=False, name=None))
+insertion_query = "INSERT INTO titanic_table (Survived, Pclass, Name, Sex, Age, Sib_Spouses_Count, Parent_Child_Count, Fare) VALUES %s"
+execute_values(cursor, insertion_query, rows)
+
+
 connection.commit()

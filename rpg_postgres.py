@@ -33,7 +33,7 @@ data = conn.execute('SELECT * FROM charactercreator_character;').fetchall()
 #print(f"There are a total of {cursor.execute(query).fetchall()[0][0]} characters")
 
 char_table = """ 
-CREATE TABLE charactercreator_character (
+CREATE TABLE character (
   character_id SERIAL PRIMARY KEY,
   name varchar(30),
   level int,
@@ -49,7 +49,7 @@ CREATE TABLE charactercreator_character (
 cursor.execute(char_table)
 
 for i in data:
-  insert_data = """INSERT INTO charactercreator_character
+  insert_data = """INSERT INTO character
         (name, level, exp, hp, strength, intelligence, dexterity, wisdom)
         VALUES""" + str(i[1:])
   cursor.execute(insert_data)
